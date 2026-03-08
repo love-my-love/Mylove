@@ -4,23 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>С 8 Марта, моя Манюня</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Great+Vibes&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Great+Vibes&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream:     #fdf6ee;
-  --ivory:     #fdfaf5;
-  --rose:      #c07080;
-  --deep-rose: #8b3a52;
-  --wine:      #52182e;
-  --wine-dark: #3a0f1f;
-  --gold:      #c8a86b;
-  --gold-lt:   #e8d5a3;
-  --text:      #3d1a27;
-  --text-mid:  #7a4058;
-  --text-pale: #a87090;
+  --cream:   #fdf6ee;
+  --ivory:   #fdfaf5;
+  --rose:    #c07080;
+  --drose:   #8b3a52;
+  --wine:    #52182e;
+  --wined:   #3a0f1f;
+  --gold:    #c8a86b;
+  --goldlt:  #e8d5a3;
+  --txt:     #3d1a27;
+  --txtm:    #7a4058;
+  --txtp:    #a87090;
 }
 
 html { scroll-behavior: smooth; }
@@ -28,207 +29,87 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'Lora', serif;
   background: var(--cream);
-  color: var(--text);
+  color: var(--txt);
   overflow-x: hidden;
 }
 
-/* ── CURSOR ─────────────────────────── */
-#cursor {
-  position: fixed;
-  width: 20px; height: 20px;
-  border: 1.5px solid var(--rose);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transform: translate(-50%,-50%);
-  transition: transform 0.15s ease;
-  mix-blend-mode: multiply;
+/* ── SPLASH ── */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--wined);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: opacity 1.2s ease, visibility 1.2s ease;
 }
-#cursor-dot {
-  position: fixed;
-  width: 5px; height: 5px;
-  background: var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transform: translate(-50%,-50%);
-}
+#splash.gone { opacity: 0; visibility: hidden; pointer-events: none; }
 
-/* ── PETALS ──────────────────────────── */
-#petals-canvas {
+.sp-line {
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin-bottom: 2rem;
+  animation: spLine 2.5s ease forwards;
+}
+@keyframes spLine { from { width: 0; } to { width: 200px; } }
+
+.sp-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(3.5rem, 12vw, 8rem);
+  color: var(--goldlt);
+  text-align: center;
+  line-height: 1.1;
+  text-shadow: 0 0 60px rgba(200,168,107,0.6);
+  animation: spFade 1s 0.3s both;
+}
+.sp-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: rgba(232,213,163,0.6);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 1.5rem;
+  animation: spFade 1s 0.6s both;
+}
+.sp-hint {
+  position: absolute; bottom: 2rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: rgba(232,213,163,0.3);
+  letter-spacing: 0.15em;
+  animation: spFade 1s 1.5s both;
+}
+.sp-bar {
+  width: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin-top: 2.5rem;
+  animation: spBar 3s 0.2s ease forwards;
+}
+@keyframes spBar { to { width: min(350px, 70vw); } }
+@keyframes spFade { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: none; } }
+
+/* ── CANVAS ── */
+#pc {
   position: fixed; inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
 }
 
-/* ── SPLASH ──────────────────────────── */
-#splash {
-  position: fixed; inset: 0; z-index: 9000;
-  background: var(--wine-dark);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column;
-  cursor: pointer;
-  transition: opacity 1.8s ease, visibility 1.8s;
-}
-#splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+/* ── SECTIONS ── */
+section { position: relative; z-index: 2; }
 
-.s-ring {
-  position: absolute;
-  border: 1px solid rgba(200,168,107,0.1);
-  border-radius: 50%;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  animation: sRingPulse 4s ease-out infinite;
-}
-.s-ring:nth-child(1) { width: 260px; height: 260px; }
-.s-ring:nth-child(2) { width: 420px; height: 420px; animation-delay: 0.9s; }
-.s-ring:nth-child(3) { width: 580px; height: 580px; animation-delay: 1.8s; }
-@keyframes sRingPulse {
-  0%   { opacity: 0.5; transform: translate(-50%,-50%) scale(0.75); }
-  100% { opacity: 0;   transform: translate(-50%,-50%) scale(1.4); }
-}
-
-.s-bar {
-  width: 50px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  margin-bottom: 2.5rem;
-  animation: sBarWiden 1.2s 0.2s ease forwards;
-}
-@keyframes sBarWiden { to { width: clamp(120px, 25vw, 220px); } }
-
-.s-title {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(4rem, 13vw, 9rem);
-  color: var(--gold-lt);
-  line-height: 1.05;
-  text-align: center;
-  animation: fadeUp 1s 0.3s both;
-  text-shadow: 0 0 80px rgba(200,168,107,0.55);
-}
-.s-sub {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: clamp(0.95rem, 2.5vw, 1.5rem);
-  color: rgba(253,250,245,0.5);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  margin-top: 1.6rem;
-  animation: fadeUp 1s 0.55s both;
-}
-.s-progress {
-  width: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  margin-top: 3.5rem;
-  animation: sProgress 3s 0.3s ease forwards;
-}
-@keyframes sProgress { to { width: clamp(180px, 40vw, 380px); } }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(25px); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ── REVEAL ──────────────────────────── */
-.reveal {
-  opacity: 0; transform: translateY(45px);
-  transition: opacity 1.1s cubic-bezier(0.22,0.61,0.36,1),
-              transform 1.1s cubic-bezier(0.22,0.61,0.36,1);
-}
-.reveal.visible { opacity: 1; transform: none; }
-.d1 { transition-delay: 0.12s; }
-.d2 { transition-delay: 0.24s; }
-.d3 { transition-delay: 0.36s; }
-.d4 { transition-delay: 0.48s; }
-
-/* ── DIVIDER ─────────────────────────── */
-.divider {
-  display: flex; align-items: center; gap: 1rem;
-  max-width: 420px; margin: 0 auto 3.5rem;
-}
-.divider::before {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold));
-}
-.divider::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, var(--gold), transparent);
-}
-.d-gem {
-  width: 7px; height: 7px;
-  border: 1px solid var(--gold);
-  transform: rotate(45deg);
-  flex-shrink: 0;
-}
-.d-gem-dim { border-color: rgba(200,168,107,0.4); }
-
-/* ── SECTION LABELS ──────────────────── */
-.s-label {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  font-size: clamp(0.72rem, 1.5vw, 0.9rem);
-  color: var(--gold);
-  margin-bottom: 0.9rem;
-  display: block;
-}
-.s-heading {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(3.5rem, 8vw, 7rem);
-  color: var(--deep-rose);
-  line-height: 1;
-  margin-bottom: 0.7rem;
-}
-.s-sub {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: clamp(1rem, 2.4vw, 1.45rem);
-  color: var(--text-pale);
-  letter-spacing: 0.05em;
-  margin-bottom: 3.5rem;
-}
-
-/* ── SVG HEART PULSE ─────────────────── */
-.heart-pulse {
-  display: block; margin: 0 auto 2.8rem;
-  filter: drop-shadow(0 8px 40px rgba(139,58,82,0.48));
-  animation: hpulse 3.5s ease-in-out infinite;
-}
-@keyframes hpulse {
-  0%,100% { transform: scale(1); }
-  14%     { transform: scale(1.13); }
-  28%     { transform: scale(1); }
-  42%     { transform: scale(1.08); }
-  56%     { transform: scale(1); }
-}
-
-/* ── HERO ────────────────────────────── */
+/* ── HERO ── */
 #hero {
   min-height: 100vh;
   display: flex; align-items: center; justify-content: center;
-  text-align: center; padding: 6rem 2rem; position: relative;
+  text-align: center; padding: 5rem 2rem;
   background:
-    radial-gradient(ellipse 80% 55% at 18% 28%, rgba(192,112,128,0.1), transparent 60%),
-    radial-gradient(ellipse 60% 75% at 82% 72%, rgba(200,168,107,0.09), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 20% 30%, rgba(192,112,128,0.1), transparent 60%),
+    radial-gradient(ellipse 60% 70% at 80% 70%, rgba(200,168,107,0.08), transparent 60%),
     var(--cream);
 }
-
-/* floating bg ornaments */
-.hf { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.hf svg {
-  position: absolute;
-  opacity: 0.07;
-  animation: hfDrift 20s ease-in-out infinite;
-}
-.hf svg:nth-child(1) { top: 10%; left: 5%;  width: 80px;  animation-duration: 18s; }
-.hf svg:nth-child(2) { top: 70%; left: 88%; width: 55px;  animation-duration: 23s; animation-delay: -6s; }
-.hf svg:nth-child(3) { top: 82%; left: 8%;  width: 42px;  animation-duration: 15s; animation-delay: -10s; }
-.hf svg:nth-child(4) { top: 18%; left: 82%; width: 68px;  animation-duration: 25s; animation-delay: -3s; }
-@keyframes hfDrift {
-  0%,100% { transform: translate(0,0) rotate(0deg); }
-  25%     { transform: translate(10px,-16px) rotate(5deg); }
-  50%     { transform: translate(-7px,9px) rotate(-4deg); }
-  75%     { transform: translate(13px,5px) rotate(3deg); }
-}
+#hero > div { max-width: 900px; }
 
 .hero-date {
   font-family: 'Cormorant Garamond', serif;
@@ -236,395 +117,533 @@ body {
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--gold);
-  font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+  font-size: clamp(0.75rem, 1.8vw, 1rem);
   margin-bottom: 2rem;
+  opacity: 0;
+  animation: up 1s 0.2s both;
+}
+.hero-heart {
+  display: block; margin: 0 auto 2rem;
+  animation: up 1s 0.1s both, hbeat 3.5s 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 8px 35px rgba(139,58,82,0.5));
 }
 .hero-title {
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(5rem, 15vw, 13rem);
-  color: var(--deep-rose);
-  line-height: 0.88;
-  margin-bottom: 1.4rem;
+  font-size: clamp(4.5rem, 14vw, 12rem);
+  color: var(--drose);
+  line-height: 0.9;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: up 1s 0.4s both;
 }
 .hero-sub {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: clamp(1.6rem, 4.5vw, 3.2rem);
+  font-size: clamp(1.5rem, 4.5vw, 3rem);
   color: var(--rose);
-  margin-bottom: 3.8rem;
-  letter-spacing: 0.04em;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: up 1s 0.6s both;
+}
+.hero-btn {
+  opacity: 0;
+  animation: up 1s 0.8s both;
 }
 
-.btn-love {
-  display: inline-flex; align-items: center; gap: 0.75rem;
+@keyframes up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes hbeat {
+  0%,100% { transform: scale(1); }
+  14% { transform: scale(1.12); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.08); }
+  56% { transform: scale(1); }
+}
+
+/* ── BUTTON ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.7rem;
   background: var(--wine);
-  color: var(--gold-lt);
+  color: var(--goldlt);
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(1rem, 2.2vw, 1.4rem);
-  letter-spacing: 0.12em;
-  padding: 1.1rem 3.8rem;
+  letter-spacing: 0.1em;
+  padding: 1rem 3.5rem;
   border: 1px solid rgba(200,168,107,0.4);
   cursor: pointer;
+  transition: background 0.35s, transform 0.3s, box-shadow 0.35s;
   position: relative; overflow: hidden;
-  transition: background 0.4s, transform 0.35s, box-shadow 0.4s;
 }
-.btn-love::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(232,213,163,0.2), transparent);
-  transform: translateX(-120%);
-  transition: transform 0.7s ease;
+.btn:hover {
+  background: var(--drose);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 50px rgba(82,24,46,0.38);
 }
-.btn-love:hover::before  { transform: translateX(120%); }
-.btn-love:hover {
-  background: var(--deep-rose);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(82,24,46,0.42);
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--drose);
+  color: var(--drose);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  padding: 0.85rem 2.5rem;
+  cursor: pointer;
+  transition: all 0.35s;
 }
-.btn-love svg { flex-shrink: 0; }
+.btn-outline:hover {
+  background: var(--drose); color: var(--ivory);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 38px rgba(139,58,82,0.22);
+}
 
-/* ── POEM ────────────────────────────── */
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 1rem;
+  max-width: 400px; margin: 0 auto 3rem;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+}
+.divider::before { background: linear-gradient(90deg, transparent, var(--gold)); }
+.divider::after  { background: linear-gradient(90deg, var(--gold), transparent); }
+.divider i {
+  width: 7px; height: 7px;
+  border: 1px solid var(--gold);
+  transform: rotate(45deg); flex-shrink: 0;
+}
+.divider-dark::before { background: linear-gradient(90deg, transparent, rgba(200,168,107,0.4)); }
+.divider-dark::after  { background: linear-gradient(90deg, rgba(200,168,107,0.4), transparent); }
+.divider-dark i { border-color: rgba(200,168,107,0.4); }
+
+/* ── REVEAL ── */
+.rv {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.rv.on { opacity: 1; transform: none; }
+.rv.d1 { transition-delay: 0.12s; }
+.rv.d2 { transition-delay: 0.24s; }
+.rv.d3 { transition-delay: 0.36s; }
+
+/* ── SECTION LABELS ── */
+.slabel {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: clamp(0.72rem, 1.5vw, 0.9rem);
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+.stitle {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(3.2rem, 7.5vw, 6.5rem);
+  color: var(--drose);
+  line-height: 1;
+  margin-bottom: 0.6rem;
+}
+.ssub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 2.3vw, 1.4rem);
+  color: var(--txtp);
+  margin-bottom: 3rem;
+}
+
+/* ── POEM ── */
 #poem {
   padding: 7rem 2rem;
   background: var(--wine);
-  position: relative; overflow: hidden; text-align: center;
+  text-align: center; overflow: hidden;
 }
 #poem::before, #poem::after {
-  content: ''; position: absolute;
-  left: 0; right: 0; height: 3px;
+  content: ''; display: block;
+  height: 2px;
   background: linear-gradient(90deg, transparent, var(--gold), transparent);
 }
-#poem::before { top: 0; }
-#poem::after  { bottom: 0; }
-
-.p-ring {
-  position: absolute; border-radius: 50%;
-  border: 1px solid rgba(200,168,107,0.06);
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  pointer-events: none;
-}
-.p-ring:nth-child(1) { width: 440px; height: 440px; }
-.p-ring:nth-child(2) { width: 680px; height: 680px; }
-
-.poem-icon { width: 26px; height: 26px; margin: 0 auto 2rem; opacity: 0.5; }
-.poem-body {
+.poem-icon { margin: 1rem auto 1.8rem; display: block; opacity: 0.5; }
+.poem-lines {
   font-family: 'Lora', serif;
   font-style: italic;
-  font-size: clamp(1.1rem, 2.7vw, 1.85rem);
-  color: rgba(253,250,245,0.86);
+  font-size: clamp(1.1rem, 2.6vw, 1.8rem);
+  color: rgba(253,250,245,0.88);
   line-height: 2.3;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 580px; margin: 0 auto;
 }
-.poem-body em {
-  display: block;
-  transition: color 0.3s;
-  font-style: normal;
-}
-.poem-body em:hover { color: var(--gold-lt); }
+.poem-lines span { display: block; transition: color 0.3s; }
+.poem-lines span:hover { color: var(--goldlt); }
 .poem-sig {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  color: var(--gold);
-  font-size: 1.05rem;
-  letter-spacing: 0.2em;
-  margin-top: 2.8rem;
-  opacity: 0.7;
+  color: var(--gold); font-size: 1rem;
+  letter-spacing: 0.2em; margin-top: 2.5rem; opacity: 0.7;
 }
 
-/* ── QUALITIES ───────────────────────── */
+/* ── QUALITIES ── */
 #qualities {
   padding: 7rem 2rem;
   background: var(--ivory);
   text-align: center;
 }
-.q-grid {
+.qgrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
-  gap: 1.3rem;
-  max-width: 860px; margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 1.2rem; max-width: 840px; margin: 0 auto;
 }
-.q-card {
-  padding: 2.8rem 1.5rem 2.2rem;
+.qcard {
+  padding: 2.5rem 1.4rem 2rem;
   border: 1px solid rgba(200,168,107,0.2);
   background: white;
   position: relative; overflow: hidden;
-  transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.5s;
+  transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.45s;
 }
-.q-card::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(145deg, var(--wine), var(--deep-rose));
+.qcard::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(145deg, var(--wine), var(--drose));
   transform: scaleY(0); transform-origin: bottom;
-  transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
-  z-index: 0;
+  transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1); z-index: 0;
 }
-.q-card:hover { transform: translateY(-10px); box-shadow: 0 28px 70px rgba(82,24,46,0.18); }
-.q-card:hover::before { transform: scaleY(1); }
-.q-card:hover .q-icon, .q-card:hover .q-title { color: var(--gold-lt); }
-.q-card:hover .q-desc { color: rgba(232,213,163,0.68); }
-.q-icon {
+.qcard:hover { transform: translateY(-10px); box-shadow: 0 26px 65px rgba(82,24,46,0.17); }
+.qcard:hover::before { transform: scaleY(1); }
+.qcard:hover .qi { color: var(--goldlt); }
+.qcard:hover .qt { color: var(--goldlt); }
+.qcard:hover .qd { color: rgba(232,213,163,0.65); }
+.qi {
   position: relative; z-index: 1;
-  width: 38px; height: 38px; margin: 0 auto 1.1rem;
-  color: var(--rose);
+  width: 36px; height: 36px; margin: 0 auto 1rem;
+  color: var(--rose); transition: color 0.4s;
+}
+.qt {
+  position: relative; z-index: 1;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem; font-weight: 600;
+  color: var(--drose); margin-bottom: 0.4rem;
   transition: color 0.4s;
 }
-.q-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.3rem; font-weight: 600;
-  color: var(--deep-rose); margin-bottom: 0.45rem;
-  position: relative; z-index: 1; transition: color 0.4s;
-}
-.q-desc {
-  font-size: 0.86rem; color: var(--text-pale); font-style: italic;
-  position: relative; z-index: 1; transition: color 0.4s; line-height: 1.65;
+.qd {
+  position: relative; z-index: 1;
+  font-size: 0.85rem; color: var(--txtp);
+  font-style: italic; line-height: 1.6;
+  transition: color 0.4s;
 }
 
-/* ── GAME ────────────────────────────── */
+/* ── GAME ── */
 #game {
   padding: 7rem 2rem;
-  background:
-    radial-gradient(ellipse at 12% 50%, rgba(192,112,128,0.07), transparent 50%),
-    radial-gradient(ellipse at 88% 50%, rgba(200,168,107,0.07), transparent 50%),
-    var(--cream);
+  background: var(--cream);
   text-align: center;
 }
-.game-score {
+.gscore {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.05rem; color: var(--gold);
-  letter-spacing: 0.18em; margin-bottom: 3rem;
+  font-size: 1rem; color: var(--gold);
+  letter-spacing: 0.18em; margin-bottom: 2.5rem;
 }
-#memoryGrid {
+#mgrid {
   display: grid;
   grid-template-columns: repeat(4,1fr);
-  gap: 10px; max-width: 660px;
-  margin: 0 auto 3rem;
+  gap: 10px; max-width: 640px; margin: 0 auto 2.5rem;
 }
-@media (max-width: 520px) { #memoryGrid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:520px){#mgrid{grid-template-columns:repeat(2,1fr);}}
 
 .mc { aspect-ratio: 1; perspective: 1000px; cursor: pointer; }
-.mc-inner {
+.mci {
   position: relative; width: 100%; height: 100%;
   transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.175,0.885,0.32,1.275);
+  transition: transform 0.65s cubic-bezier(0.175,0.885,0.32,1.275);
 }
-.mc.flipped .mc-inner { transform: rotateY(180deg); }
-.mc-f, .mc-b {
+.mc.fl .mci { transform: rotateY(180deg); }
+.mcf,.mcb {
   position: absolute; width: 100%; height: 100%;
   backface-visibility: hidden; border-radius: 3px; overflow: hidden;
 }
-.mc-f {
+.mcf {
   background: var(--wine);
   border: 1px solid rgba(200,168,107,0.22);
   display: flex; align-items: center; justify-content: center;
 }
-.mc-f svg { width: 26px; height: 26px; opacity: 0.3; color: var(--gold); }
-.mc-b { transform: rotateY(180deg); }
-.mc-b img { width: 100%; height: 100%; object-fit: cover; }
-.mc.matched .mc-inner { outline: 1.5px solid var(--gold); }
+.mcf svg { width: 24px; height: 24px; opacity: 0.28; color: var(--gold); }
+.mcb { transform: rotateY(180deg); }
+.mcb img { width: 100%; height: 100%; object-fit: cover; }
+.mc.mt .mci { outline: 1.5px solid var(--gold); }
 
-.btn-outline {
-  display: inline-flex; align-items: center; gap: 0.55rem;
-  border: 1px solid var(--deep-rose); color: var(--deep-rose);
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.1rem; letter-spacing: 0.12em;
-  padding: 0.85rem 2.5rem;
-  cursor: pointer; background: transparent;
-  transition: all 0.4s ease;
-}
-.btn-outline:hover {
-  background: var(--deep-rose); color: var(--ivory);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 42px rgba(139,58,82,0.22);
-}
-
-/* ── GALLERY ─────────────────────────── */
+/* ── GALLERY ── */
 #gallery {
   padding: 7rem 2rem;
   background: var(--wine);
   text-align: center;
 }
-#gallery .s-label   { color: rgba(232,213,163,0.6); }
-#gallery .s-heading { color: var(--gold-lt); }
-#gallery .s-sub     { color: rgba(253,250,245,0.42); }
-#gallery .divider::before { background: linear-gradient(90deg, transparent, rgba(200,168,107,0.38)); }
-#gallery .divider::after  { background: linear-gradient(90deg, rgba(200,168,107,0.38), transparent); }
+#gallery .slabel { color: rgba(232,213,163,0.6); }
+#gallery .stitle { color: var(--goldlt); }
+#gallery .ssub   { color: rgba(253,250,245,0.42); }
 
-.g-grid {
+.ggrid {
   display: grid;
   grid-template-columns: repeat(4,1fr);
-  grid-auto-rows: 190px;
-  gap: 8px;
-  max-width: 980px; margin: 0 auto;
+  grid-auto-rows: 185px;
+  gap: 7px; max-width: 960px; margin: 0 auto;
 }
-@media (max-width: 680px) {
-  .g-grid { grid-template-columns: repeat(2,1fr); grid-auto-rows: 160px; }
-}
+@media(max-width:680px){.ggrid{grid-template-columns:repeat(2,1fr);grid-auto-rows:150px;}}
 .gi { position: relative; overflow: hidden; cursor: zoom-in; }
-.gi:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.gi:first-child { grid-column: span 2; grid-row: span 2; }
 .gi img {
   width: 100%; height: 100%; object-fit: cover; display: block;
-  transition: transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.7s;
-  filter: brightness(0.88) saturate(0.75);
+  transition: transform 0.85s ease, filter 0.6s;
+  filter: brightness(0.85) saturate(0.75);
 }
 .gi:hover img { transform: scale(1.08); filter: brightness(1) saturate(1); }
-.gi-ov {
+.giov {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(40,8,20,0.75) 0%, transparent 52%);
-  opacity: 0; transition: opacity 0.5s;
-  display: flex; align-items: flex-end; padding: 1.1rem 0.9rem;
+  background: linear-gradient(to top, rgba(35,8,18,0.75) 0%, transparent 52%);
+  opacity: 0; transition: opacity 0.45s;
+  display: flex; align-items: flex-end; padding: 1rem 0.9rem;
 }
-.gi:hover .gi-ov { opacity: 1; }
-.gi-lbl {
+.gi:hover .giov { opacity: 1; }
+.gilbl {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic; color: var(--gold-lt);
-  font-size: 0.9rem; letter-spacing: 0.12em;
-  transform: translateY(7px);
-  transition: transform 0.4s;
+  font-style: italic; color: var(--goldlt);
+  font-size: 0.88rem; letter-spacing: 0.12em;
+  transform: translateY(6px); transition: transform 0.38s;
 }
-.gi:hover .gi-lbl { transform: none; }
+.gi:hover .gilbl { transform: none; }
 
-/* ── LIGHTBOX ─────────────────────────── */
-#lightbox {
+/* ── LIGHTBOX ── */
+#lb {
   position: fixed; inset: 0; z-index: 8000;
-  background: rgba(22,5,14,0.96);
+  background: rgba(18,4,10,0.96);
   display: none; align-items: center; justify-content: center;
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
 }
-#lightbox.open { display: flex; }
-#lb-img {
-  max-width: 88vw; max-height: 86vh; object-fit: contain;
-  transition: opacity 0.22s;
+#lb.open { display: flex; }
+#lbimg {
+  max-width: 88vw; max-height: 84vh;
+  object-fit: contain; transition: opacity 0.2s;
 }
-#lb-close {
-  position: absolute; top: 1.8rem; right: 2.2rem;
+#lbclose {
+  position: absolute; top: 1.5rem; right: 2rem;
   background: none; border: none;
-  color: var(--gold-lt); font-size: 1.7rem;
-  cursor: pointer; line-height: 1;
-  font-family: 'Cormorant Garamond', serif;
-  transition: transform 0.35s, color 0.3s;
+  color: var(--goldlt); font-size: 2rem;
+  cursor: pointer; transition: transform 0.3s;
+  font-family: serif; line-height: 1;
 }
-#lb-close:hover { transform: rotate(90deg); color: var(--gold); }
-#lb-prev, #lb-next {
+#lbclose:hover { transform: rotate(90deg); }
+#lbprev, #lbnext {
   position: absolute; top: 50%; transform: translateY(-50%);
-  background: rgba(82,24,46,0.5);
-  border: 1px solid rgba(200,168,107,0.28);
-  color: var(--gold-lt); font-size: 1.5rem;
-  width: 46px; height: 46px;
+  background: rgba(82,24,46,0.5); border: 1px solid rgba(200,168,107,0.25);
+  color: var(--goldlt); font-size: 1.6rem;
+  width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: background 0.3s;
 }
-#lb-prev { left: 1.2rem; }
-#lb-next { right: 1.2rem; }
-#lb-prev:hover, #lb-next:hover { background: var(--deep-rose); }
+#lbprev { left: 1rem; } #lbnext { right: 1rem; }
+#lbprev:hover, #lbnext:hover { background: var(--drose); }
 
-/* ── FINAL ───────────────────────────── */
+/* ── FINAL ── */
 #final {
-  padding: 9rem 2rem 7rem; text-align: center;
+  padding: 8rem 2rem 6rem; text-align: center;
   background:
     radial-gradient(ellipse 65% 55% at 50% 50%, rgba(192,112,128,0.12), transparent),
     var(--ivory);
 }
-.final-heart {
-  display: block; margin: 0 auto 3rem;
-  animation: hpulse 3.5s ease-in-out infinite;
+.fheart {
+  display: block; margin: 0 auto 2.8rem;
+  animation: hbeat 3.5s ease-in-out infinite;
   filter: drop-shadow(0 10px 40px rgba(139,58,82,0.52));
 }
-.final-title {
+.ftitle {
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(3.5rem, 9vw, 8rem);
-  color: var(--deep-rose);
-  line-height: 1.05; margin-bottom: 2rem;
+  font-size: clamp(3rem, 8.5vw, 7.5rem);
+  color: var(--drose); line-height: 1.05; margin-bottom: 1.8rem;
 }
-.final-text {
+.ftext {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: clamp(1.2rem, 2.8vw, 1.85rem);
-  color: var(--text-mid); max-width: 540px;
-  margin: 0 auto 4rem; line-height: 2;
+  font-size: clamp(1.1rem, 2.6vw, 1.8rem);
+  color: var(--txtm); max-width: 520px;
+  margin: 0 auto 3.5rem; line-height: 2;
 }
-.final-sig {
+.fsig {
+  display: block;
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  color: var(--gold); display: block; margin-top: 3.5rem;
+  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  color: var(--gold); margin-top: 3rem;
 }
-.final-date {
+.fdate {
   font-family: 'Cormorant Garamond', serif;
-  font-style: italic; font-size: 0.92rem;
-  color: var(--text-pale); letter-spacing: 0.2em;
-  margin-top: 0.7rem; opacity: 0.58;
+  font-style: italic; font-size: 0.9rem;
+  color: var(--txtp); letter-spacing: 0.2em;
+  margin-top: 0.6rem; opacity: 0.55;
 }
 
-/* ── MUSIC BTN ───────────────────────── */
-#musicBtn {
-  position: fixed; bottom: 2rem; right: 2rem; z-index: 5000;
-  width: 54px; height: 54px;
+/* ── MUSIC BTN ── */
+#mbtn {
+  position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 5000;
+  width: 52px; height: 52px;
   background: var(--wine); border: 1px solid rgba(200,168,107,0.45);
   border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 32px rgba(40,8,20,0.55);
-  transition: transform 0.4s, background 0.3s;
+  box-shadow: 0 6px 28px rgba(35,8,18,0.55);
+  transition: transform 0.35s, background 0.3s;
 }
-#musicBtn:hover { transform: scale(1.13); background: var(--deep-rose); }
-#musicBtn svg { width: 20px; height: 20px; color: var(--gold-lt); }
+#mbtn:hover { transform: scale(1.12); background: var(--drose); }
+#mbtn svg { width: 20px; height: 20px; color: var(--goldlt); }
 .mr {
   position: absolute; width: 100%; height: 100%;
   border: 1px solid rgba(200,168,107,0.3); border-radius: 50%;
-  animation: mRipple 2.5s ease-out infinite; opacity: 0;
+  animation: mr 2.5s ease-out infinite; opacity: 0;
 }
-.mr:nth-child(2) { animation-delay: 0.75s; }
-.mr:nth-child(3) { animation-delay: 1.5s; }
-@keyframes mRipple {
-  0%   { transform: scale(1); opacity: 0.45; }
+.mr:nth-child(2) { animation-delay: 0.8s; }
+.mr:nth-child(3) { animation-delay: 1.6s; }
+@keyframes mr {
+  0% { transform: scale(1); opacity: 0.4; }
   100% { transform: scale(2.6); opacity: 0; }
 }
 
-/* grain */
-body::after {
-  content: ''; position: fixed; inset: 0;
-  pointer-events: none; z-index: 3;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  opacity: 0.35;
-}
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-dot"></div>
-<canvas id="petals-canvas"></canvas>
+<!-- PETALS -->
+<canvas id="pc"></canvas>
 
 <!-- SPLASH -->
 <div id="splash">
-  <div class="s-ring"></div>
-  <div class="s-ring"></div>
-  <div class="s-ring"></div>
-  <div class="s-bar"></div>
-  <div class="s-title">С 8 Марта,<br>моя Манюня</div>
-  <div class="s-sub">Настенька — моё нежнейшее чудо</div>
-  <div class="s-progress"></div>
-  <div style="position:absolute;bottom:2.5rem;font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(232,213,163,0.35);font-size:0.85rem;letter-spacing:0.2em;">нажми, чтобы продолжить</div>
+  <div class="sp-line"></div>
+  <div class="sp-title">С 8 Марта,<br>моя Манюня</div>
+  <div class="sp-sub">Настенька — моё нежнейшее чудо</div>
+  <div class="sp-bar"></div>
+  <div class="sp-hint">нажми, чтобы продолжить</div>
 </div>
 
 <!-- LIGHTBOX -->
-<div id="lightbox">
-  <button id="lb-close" onclick="closeLB()">&#x2715;</button>
-  <button id="lb-prev" onclick="lbNav(-1)">&#8249;</button>
-  <img id="lb-img" src="" alt="">
-  <button id="lb-next" onclick="lbNav(1)">&#8250;</button>
+<div id="lb">
+  <button id="lbclose" onclick="lbClose()">&#x2715;</button>
+  <button id="lbprev"  onclick="lbNav(-1)">&#8249;</button>
+  <img id="lbimg" src="" alt="">
+  <button id="lbnext"  onclick="lbNav(1)">&#8250;</button>
 </div>
 
 <!-- ══ HERO ══ -->
 <section id="hero">
-  <div class="hf">
-    <svg viewBox="0 0 100 100" fill="none" stroke="#8b3a52" stroke-width="1.4">
-      <circle cx="50" cy="35" r="12"/><circle cx="50" cy="59" r="12"/>
-      <circle cx="29" cy="47" r="12"/><circle cx="71" cy="47" r="12"/>
-      <circle cx="50" cy="47" r="5"/>
+  <div>
+    <!-- SVG heart -->
+    <svg class="hero-heart" width="110" height="100" viewBox="0 0 100 90">
+      <path d="M50 82C50 82 6 52 6 26A22 22 0 0 1 50 16 22 22 0 0 1 94 26C94 52 50 82 50 82Z"
+            fill="#8b3a52" stroke="#c8a86b" stroke-width="1.5"/>
+      <path d="M27 24C25 19 20 17 18 19" stroke="rgba(255,255,255,0.3)" stroke-width="2.8" stroke-linecap="round"/>
     </svg>
-    <svg viewBox="0 0 100 100" fill="none" stroke="#c8a86b" stroke-width="1.4">
-      <path d="M50 10 Q68 28 50 50 Q32 28 50 10Z"/>
-      <path d="M90 50 Q72 68 50 50 Q72 32 90 50Z"/>
-      <path d="M50 90 Q32 72 50 50 Q68 72 50 90Z"/>
-      <path d="M10 50 Q28 32 50 50 Q28 68 10 50Z"/>
+
+    <p class="hero-date">8 марта 2026 · с любовью</p>
+    <h1 class="hero-title">С 8 Марта,<br>моя Зайка!</h1>
+    <p class="hero-sub">Моя самая любимая Манюня</p>
+    <div class="hero-btn">
+      <button class="btn" onclick="lovePop()">
+        <svg width="13" height="13" viewBox="0 0 20 18" fill="currentColor">
+          <path d="M10 17S1 11 1 5.5A4.5 4.5 0 0 1 10 2.5 4.5 4.5 0 0 1 19 5.5C19 11 10 17 10 17Z"/>
+        </svg>
+        Нажми, если любишь меня тоже
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ POEM ══ -->
+<section id="poem">
+  <div class="rv">
+    <svg class="poem-icon" width="26" height="24" viewBox="0 0 26 24" fill="none" stroke="#c8a86b" stroke-width="1.2">
+      <path d="M13 22C13 22 2 14 2 7.5A5.5 5.5 0 0 1 13 3.5 5.5 5.5 0 0 1 24 7.5C24 14 13 22 13 22Z"/>
+    </svg>
+    <div class="poem-lines">
+      <span>Ты — свет, что первым входит в комнату,</span>
+      <span>улыбка, тёплая как май,</span>
+      <span>ты — всё, чего я так хотел когда-то,</span>
+      <span>мой самый настоящий рай.</span>
+      <span>Твои глаза — моё богатство,</span>
+      <span>твои слова — мой лучший день,</span>
+      <span>хочу любить тебя всегда, Настенька,</span>
+      <span>в любую даль и в любую тень.</span>
+    </div>
+    <p class="poem-sig">— для моей Манюни, с бесконечной любовью</p>
+  </div>
+</section>
+
+<!-- ══ QUALITIES ══ -->
+<section id="qualities">
+  <span class="slabel rv">то, что делает тебя особенной</span>
+  <h2 class="stitle rv d1">Что я в тебе люблю</h2>
+  <p class="ssub rv d2">список бесконечен, но вот главное</p>
+  <div class="divider rv d3"><i></i></div>
+
+  <div class="qgrid">
+    <div class="qcard rv">
+      <div class="qi">
+        <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M19 33S4 22 4 11a7.5 7.5 0 0 1 15-1.5A7.5 7.5 0 0 1 34 11C34 22 19 33 19 33Z"/>
+        </svg>
+      </div>
+      <div class="qt">Твой смех</div>
+      <div class="qd">Самый заразительный звук на свете</div>
+    </div>
+    <div class="qcard rv d1">
+      <div class="qi">
+        <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="19" cy="19" r="8"/><circle cx="19" cy="19" r="14"/>
+          <path d="M19 3v4M19 31v4M3 19h4M31 19h4"/>
+        </svg>
+      </div>
+      <div class="qt">Твои глаза</div>
+      <div class="qd">В них виден целый мир</div>
+    </div>
+    <div class="qcard rv d2">
+      <div class="qi">
+        <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M19 5C25 0 38 5 38 17C38 29 19 38 19 38C19 38 0 29 0 17C0 5 13 0 19 5Z"/>
+          <path d="M11 16C11 12 15 10 19 13"/>
+        </svg>
+      </div>
+      <div class="qt">Твоя нежность</div>
+      <div class="qd">Она согревает даже в холода</div>
+    </div>
+    <div class="qcard rv">
+      <div class="qi">
+        <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="19" cy="19" r="14"/>
+          <path d="M19 8v22M8 19h22"/>
+        </svg>
+      </div>
+      <div class="qt">Твой ум</div>
+      <div class="qd">Ты умнее, чем думаешь</div>
+    </div>
+    <div class="qcard rv d1">
+      <div class="qi">
+        <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="19" cy="19" r="14"/>
+          <path d="M12 19l5 5 9-9"/>
+        </svg>
+      </div>
+      <div class="qt">Твоя сила</div>
+      <div class="qd">Ты справляешься со всем</div>
+    </div>
+    <div class="qcard rv d2">
+      <div class="qi">
+        <svg viewBox="0 0 38 38" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M19 34S5 24 5 13A7 7 0 0 1 19 8A7 7 0 0 1 33 13C33 24 19 34 19 34Z"/>
+          <path d="M12 14C12 10 16 8 19 11"/>
+        </svg>
+      </div>
+      <div class="qt">Твоя забота</div>
+      <div class="qd">Ты любишь всем сердцем</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ GAME ══ -->
+<section id="game">
+  <span class="slabel rv">мини-игра</span>
+  <h2 class="stitle rv d1">Собери воспоминания</h2>
+  <p class="gscore rv d2" id="gscore">Пар найдено: 0 / 8</p>
+  <div class="divider rv d3"><i></i></div>
+  <div id="mgrid"></div>
+  <button class="
